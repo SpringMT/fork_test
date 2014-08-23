@@ -11,20 +11,19 @@ end
 
 trap(:CHLD) do
   begin
-    while pid = Process.wait(-1)
+    while pid = Process.wait(-1, Process::WNOHANG)
       p "Accept CHLD"
-      #p Process.wait
       p pid
       dead_process_num += 1
-      exit if child_process_num == dead_process_num
     end
+  rescue Errno::ECHILD
   end
-
 end
 
 
 loop do
   print '*'
+  exit if child_process_num == dead_process_num
   sleep 1
 end
 
